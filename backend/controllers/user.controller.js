@@ -1,1 +1,3 @@
-import { User } from "../models/user.models.js";
+import { User } from "../models/User.models.js";
+
+
