@@ -14,6 +14,20 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true, 
     },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true, 
+      index: true
+  },fullName: {
+    type: String,
+    required: true,
+    trim: true, 
+    index: true
+},
+
     role: {
       type: String,
       enum: ["recruiter", "applicant"],
@@ -21,7 +35,17 @@ const userSchema = new mongoose.Schema(
     },
     refreshToken:{
       type: String
-    }
+    },
+    avatar: {
+      type: String, // cloudinary url
+      required: true,
+  },
+  coverImage: {
+      type: String, // cloudinary url
+  }
+
+
+
   },
 
   {
