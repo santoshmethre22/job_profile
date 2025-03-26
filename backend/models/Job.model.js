@@ -1,145 +1,167 @@
 import mongoose from "mongoose";
 
-const jobschema = new mongoose.Schema(
+import mongoosePaginate from 'mongoose-paginate-v2';
+
+
+
+const jobSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref:"User"
-      
+      ref: "User",
+      required: true
     },
     title: {
       type: String,
-      required: true,
+      required: [true, "Job title is required"],
+      trim: true,
+      maxlength: [100, "Job title cannot exceed 100 characters"]
+    },
+    description: {
+      type: String,
+      required: [true, "Job description is required"],
+      trim: true
+    },
+    requirements: {
+      type: [String],
+      required: [true, "Job requirements are required"],
+      validate: {
+        validator: function(v) {
+          return v.length > 0;
+        },
+        message: "At least one requirement is required"
+      }
     },
     maxApplicants: {
       type: Number,
-      validate: [
-        {
-          validator: Number.isInteger,
-          msg: "maxApplicants should be an integer",
-        },
-        {
-          validator: function (value) {
-            return value > 0;
-          },
-          msg: "maxApplicants should greater than 0",
-        },
-      ],
+      required: [true, "Maximum applicants is required"],
+      min: [1, "Maximum applicants must be at least 1"],
+      validate: {
+        validator: Number.isInteger,
+        message: "Maximum applicants must be an integer"
+      }
     },
     maxPositions: {
       type: Number,
-      validate: [
-        {
-          validator: Number.isInteger,
-          msg: "maxPostions should be an integer",
-        },
-        {
-          validator: function (value) {
-            return value > 0;
-          },
-          msg: "maxPositions should greater than 0",
-        },
-      ],
+      required: [true, "Maximum positions is required"],
+      min: [1, "Maximum positions must be at least 1"],
+      validate: {
+        validator: Number.isInteger,
+        message: "Maximum positions must be an integer"
+      }
     },
     activeApplications: {
       type: Number,
       default: 0,
-      validate: [
-        {
-          validator: Number.isInteger,
-          msg: "activeApplications should be an integer",
-        },
-        {
-          validator: function (value) {
-            return value >= 0;
-          },
-          msg: "activeApplications should greater than equal to 0",
-        },
-      ],
+      min: [0, "Active applications cannot be negative"],
+      validate: {
+        validator: Number.isInteger,
+        message: "Active applications must be an integer"
+      }
     },
     acceptedCandidates: {
       type: Number,
       default: 0,
-      validate: [
-        {
-          validator: Number.isInteger,
-          msg: "acceptedCandidates should be an integer",
-        },
-        {
-          validator: function (value) {
-            return value >= 0;
-          },
-          msg: "acceptedCandidates should greater than equal to 0",
-        },
-      ],
+      min: [0, "Accepted candidates cannot be negative"],
+      validate: {
+        validator: Number.isInteger,
+        message: "Accepted candidates must be an integer"
+      }
     },
     dateOfPosting: {
       type: Date,
-      default: Date.now,
+      default: Date.now
     },
     deadline: {
       type: Date,
-      validate: [
-        {
-          validator: function (value) {
-            return this.dateOfPosting < value;
-          },
-          msg: "deadline should be greater than dateOfPosting",
+      required: [true, "Application deadline is required"],
+      validate: {
+        validator: function(value) {
+          return value > this.dateOfPosting;
         },
-      ],
+        message: "Deadline must be after the posting date"
+      }
     },
-    skillsets: [String],
-
+    skillsets: {
+      type: [String],
+      required: [true, "Skillsets are required"],
+      validate: {
+        validator: function(v) {
+          return v.length > 0;
+        },
+        message: "At least one skillset is required"
+      }
+    },
     jobType: {
       type: String,
-      required: true,
+      required: [true, "Job type is required"],
+      enum: {
+        values: ["full-time", "part-time", "contract", "internship", "remote"],
+        message: "Invalid job type"
+      }
     },
-
     duration: {
       type: Number,
-      min: 0,
-      validate: [
-        {
-          validator: Number.isInteger,
-          msg: "Duration should be an integer",
-        },
-      ],
+      min: [0, "Duration cannot be negative"],
+      validate: {
+        validator: Number.isInteger,
+        message: "Duration must be an integer"
+      }
     },
-
-
     salary: {
       type: Number,
-      validate: [
-        {
-          validator: Number.isInteger,
-          msg: "Salary should be an integer",
-        },
-
-        {
-          validator: function (value) {
-            return value >= 0;
-          },
-          msg: "Salary should be positive",
-        },
-      ],
+      required: [true, "Salary is required"],
+      min: [0, "Salary cannot be negative"],
+      validate: {
+        validator: Number.isInteger,
+        message: "Salary must be an integer"
+      }
     },
-
+    location: {
+      type: String,
+      required: [true, "Location is required"],
+      trim: true
+    },
     rating: {
       type: Number,
-      max: 5.0,
-      default: -1.0,
-      validate: {
-        validator: function (v) {
-          return v >= -1.0 && v <= 5.0;
-        },
-        msg: "Invalid rating",
-      },
+      default: -1,
+      min: [-1, "Rating cannot be less than -1"],
+      max: [5, "Rating cannot exceed 5"]
     },
+    status: {
+      type: String,
+      enum: {
+        values: ["active", "inactive", "closed"],
+        message: "Invalid job status"
+      },
+      default: "active"
+    }
   },
   { 
-    timestamps:true,  
-    collation: { locale: "en" }
-   }
+    timestamps: true,
+    collation: { 
+      locale: "en",
+      strength: 2 // Case-insensitive sorting
+    },
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
 );
 
-export const Job=mongoose.model("Job",jobschema)
+// Add index for better performance
+jobSchema.index({ title: "text", description: "text" });
+jobSchema.index({ userId: 1 });
+jobSchema.index({ deadline: 1 });
+jobSchema.index({ jobType: 1 });
+
+// Virtual population of applications
+jobSchema.virtual("applications", {
+  ref: "Application",
+  localField: "_id",
+  foreignField: "jobId"
+});
+
+
+jobSchema.plugin(mongoosePaginate);
+
+export const Job = mongoose.model("Job", jobSchema);

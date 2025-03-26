@@ -63,4 +63,4 @@ const JobApplicantInfo = new mongoose.Schema(
   { collation: { locale: "en" } }
 );
 
-export const  JobApplicant = mongoose.model("JobApplicantInfo", schema);
+export const  JobApplicant = mongoose.model("JobApplicantInfo", JobApplicantInfo);

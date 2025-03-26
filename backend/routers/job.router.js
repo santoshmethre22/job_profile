@@ -10,8 +10,31 @@
 // DELETE /jobs/:id - Delete a job (Recruiter only)
 
 
-router.post("/jobs", jwtAuth, addJob); // Add a new job (Recruiter)
-router.get("/jobs", jwtAuth, getAllJobs); // Get all jobs (filtered)
-router.get("/jobs/:id", jwtAuth, getJobById); // Get a single job
-router.put("/jobs/:id", jwtAuth, updateJob); // Update job (Recruiter)
-router.delete("/jobs/:id", jwtAuth, deleteJob); // Delete job (Recruiter)
+import express from "express"
+import {
+    addJob, 
+    getAllJobs, 
+    getJobById, 
+    updateJob, 
+    deleteJob 
+}
+from "../controllers/Job.controller.js"
+
+import {verifyJWT} from "../middleware/auth.middleware.js"
+
+
+const router=express.Router();
+
+router.post("/add-job", verifyJWT, addJob); // Add a new job (Recruiter)
+
+
+router.get("/get-all-job", verifyJWT, getAllJobs); // Get all jobs (filtered)
+
+
+router.get("/get-jojb/:id", verifyJWT, getJobById); // Get a single job
+
+router.put("/update/:id", verifyJWT, updateJob); // Update job (Recruiter)
+
+router.delete("/delete/:id", verifyJWT, deleteJob); // Delete job (Recruiter)
+
+export default router;

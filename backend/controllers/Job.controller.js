@@ -1,107 +1,164 @@
-// Job Controllers:
-// addJob - Handles POST /jobs (adds new job)
+import { Job } from "../models/Job.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
-import {Job} from "../models/Job.model.js"
-
-import {asyncHandler} from "../utils/asyncHandler.js"
-import { ApiError } from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/Apiresponse.js"
-
-const addJobs=asyncHandler(async(req ,res)=>{
-    if(req.user.type!="recruiter"){
-        throw new ApiError(404,"you are not recruiter to add the job ");
+// Add new job (Recruiter only)
+const addJob = asyncHandler(async (req, res) => {
+    if (req.user.type !== "recruiter") {
+        throw new ApiError(403, "Only recruiters can add jobs");
     }
-    const jobObject=req.body;
-    if(!jobObject){
-        throw new ApiError(404,"all the fields are required ")
+
+    const { 
+        title, 
+        description, 
+        requirements, 
+        location, 
+        salary,
+        maxApplicants,
+        maxPositions,
+        deadline,
+        skillsets,
+        jobType,
+        duration
+    } = req.body;
+    
+    // Validate required fields
+    const requiredFields = ['title', 'description', 'location', 'salary', 'deadline', 'jobType'];
+    const missingFields = requiredFields.filter(field => !req.body[field]);
+    
+    if (missingFields.length > 0) {
+        throw new ApiError(400, `Missing required fields: ${missingFields.join(', ')}`);
     }
-    const job=new Job({userId:req.user._id,...req.body})
-    await job.save()
-    .then(res.status(200).json(
-        res.status(200).json(ApiResponse(200,job,"the job is created succcessfully"))
-    ))
- })
 
+    // Create job with all fields
+    const job = await Job.create({
+        userId: req.user._id,
+        title,
+        description,
+        requirements: requirements || [],
+        location,
+        salary,
+        maxApplicants: maxApplicants || 1,
+        maxPositions: maxPositions || 1,
+        deadline,
+        skillsets: skillsets || [],
+        jobType,
+        duration: duration || 0
+    });
 
- // getAllJobs - Handles GET /jobs (gets all jobs with filters)
+    return res.status(201).json(
+        new ApiResponse(201, job, "Job created successfully")
+    );
+});
 
- const getAllJobs=asyncHandler(async (req,res)=>{
+// Get all jobs with filters and pagination
+const getAllJobs = asyncHandler(async (req, res) => {
+    const { 
+        location, 
+        minSalary, 
+        title, 
+        jobType,
+        page = 1,
+        limit = 10
+        
+    } = req.query;
+    
+    const filter = {};
+    if (location) filter.location = { $regex: location, $options: 'i' };
+    if (minSalary) filter.salary = { $gte: Number(minSalary) };
+    if (title) filter.title = { $regex: title, $options: 'i' };
+    if (jobType) filter.jobType = jobType;
 
-    const allJobs =await Job.findAll()
+    const options = {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        sort: { createdAt: -1 }
+    };
 
-    res.status(200).json(new ApiResponse(200,allJobs,"all the job fetched successfully"))
+    const jobs = await Job.paginate(filter, options);
 
- })
+    return res.status(200).json(
+        new ApiResponse(200, jobs, "Jobs retrieved successfully")
+    );
+});
 
+// Get single job by ID with applications populated
+const getJobById = asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
+    const job = await Job.findById(id).populate({
+        path: 'applications',
+        select: '-__v -createdAt -updatedAt'
+    });
 
- // getJobById - Handles GET /jobs/:id (gets single job)
-
-
- const getJobById=asyncHandler(async(req,res)=>{
-
-    const {jobId}=req.params.id
-
-    const job=await Job.findById(jobId);
-
-    if(!job){
-        throw new ApiError(404,"job is not found");
+    if (!job) {
+        throw new ApiError(404, "Job not found");
     }
 
     return res.status(200).json(
-        new ApiResponse(200,job,"the job is fetch successfully")
-    )
+        new ApiResponse(200, job, "Job retrieved successfully")
+    );
+});
 
-
- })
-
-
-
- 
-// updateJob - Handles PUT /jobs/:id (updates job)
-
-const updateJob=asyncHandler(async(req,res)=>{
-
-    const {jobId}=req.params.id
-    const user=req.user
-
-    const updateObject=req.body
-
-    if(user.type!=="recruiter")
-    {
-
-        throw new ApiError(404,"recruiter only can add update the job")
+// Update job (Recruiter only)
+const updateJob = asyncHandler(async (req, res) => {
+    if (req.user.type !== "recruiter") {
+        throw new ApiError(403, "Only recruiters can update jobs");
     }
 
+    const { id } = req.params;
+    const updateData = req.body;
 
-    // if(user._id!=jobId){
-    //     throw new ApiError(404,"you can not edit the this as ")
-    // }
+    // Prevent updating certain fields
+    const restrictedFields = ['userId', '_id', 'createdAt', 'updatedAt'];
+    restrictedFields.forEach(field => delete updateData[field]);
 
+    const job = await Job.findOneAndUpdate(
+        { _id: id, userId: req.user._id },
+        updateData,
+        { 
+            new: true, 
+            runValidators: true,
+            context: 'query' // Ensures validators run with updated data
+        }
+    );
 
-
-    const updated=await Job.findByIdAndUpdate({jobId,user},...updateObject,{
-        new:true
-    })// here is the error i guess-->6
-    console.log(updated)
-    if(!updated){
-        throw 
+    if (!job) {
+        throw new ApiError(404, "Job not found or you don't have permission");
     }
-    return res.status(200).json(updated);
-})
 
+    return res.status(200).json(
+        new ApiResponse(200, job, "Job updated successfully")
+    );
+});
 
-// Delete a job (Recruiter only)
-/// TODO :CHECH HERE ----->
-exports.deleteJob = async (req, res) => {
-    try {
-      const job = await Job.findOneAndDelete({
-        _id: req.params.id,
-        userId: req.user._id,
-      });
-      if (!job) return res.status(404).json({ message: "Job not found" });
-      res.json({ message: "Job deleted successfully" });
-    } catch (err) {
-      res.status(400).json(err);
+// Delete job (Recruiter only)
+const deleteJob = asyncHandler(async (req, res) => {
+    if (req.user.type !== "recruiter") {
+        throw new ApiError(403, "Only recruiters can delete jobs");
     }
-  };
+
+    const { id } = req.params;
+
+    const job = await Job.findOneAndDelete({ 
+        _id: id, 
+        userId: req.user._id 
+    });
+
+    if (!job) {
+        throw new ApiError(404, "Job not found or you don't have permission");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, null, "Job deleted successfully")
+    );
+});
+
+export { 
+    addJob, 
+    getAllJobs, 
+    getJobById, 
+    updateJob, 
+    deleteJob 
+};

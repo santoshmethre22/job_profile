@@ -17,7 +17,22 @@ app.use(cookieParser())
 
 //routes import
 
-//routes declaration
+// routers will be here
+
+
+import userRouter from "./routers/user.router.js"
+import jobRouter from "./routers/job.router.js"
+
+app.use("/api/v1/user",userRouter)
+
+app.use("/api/v1/job",jobRouter)
+
+
+app.get("/",(req,res)=>{
+    res.send("hello santosh")
+})
+
+
 
 
 
