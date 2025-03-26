@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-let schema = new mongoose.Schema(
+const jobschema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -142,4 +142,4 @@ let schema = new mongoose.Schema(
    }
 );
 
-module.exports = mongoose.model("jobs", schema);
+export const Job=mongoose.model("Job",jobschema)

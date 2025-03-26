@@ -1,6 +1,8 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-let schema = new mongoose.Schema(
+
+
+const  Applicationschema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -53,7 +55,9 @@ let schema = new mongoose.Schema(
       },
     },
   },
-  { collation: { locale: "en" } }
+  { 
+    timestamps:true,
+    collation: { locale: "en" } }
 );
 
 // schema.virtual("applicationUser", {
@@ -77,4 +81,5 @@ let schema = new mongoose.Schema(
 //   justOne: true,
 // });
 
-module.exports = mongoose.model("applications", schema);
+
+export const Application=mongoose.model("Application",Applicationschema)

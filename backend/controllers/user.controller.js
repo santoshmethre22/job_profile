@@ -5,7 +5,8 @@ import {User} from "../models/User.models.js"
 import {asyncHandler} from  "../utils/asyncHandler.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/Apiresponse.js"
-
+import { Recruiter } from "../models/Recuiter.model.js"
+import { JobApplicant } from "../models/JobApplicant.model.js"
 
 const generateAccessTokenAndRefreshToken=async(userId)=>{ 
     try {
@@ -206,15 +207,76 @@ const logoutUser=asyncHandler(async(req,res)=>{
 })
 
 
-// getUserProfile - Handles GET /user (gets current user profile)
 
-// getUserById - Handles GET /user/:id (gets user by ID)
+// refreshToken 
+
+//const refreshAccessToken=asyncHandler(asyncy)
+
+
+
+
+
+
+// getUserProfile current user  - Handles GET /user (gets current user profile)
+const getUserProfile = async (req, res) => {
+    try {
+      const user = req.user.type === "recruiter"
+        ? await Recruiter.findOne({userId: req.user._id})
+        : await JobApplicant.findOne({ userId: req.user._id });
+      res.status(200).json(new ApiResponse(200,user,"the user pofile "));
+    } catch (err) {
+      throw new ApiError(400,err,"error whiile getting current user  profile") ;
+    }
+  };
+
+
+// getUserBy job Id - Handles GET /user/:id (gets user by ID)
+
+
+const getUserById=asyncHandler(async(req,res)=>{
+
+    const userId=req.params._id
+
+    const user=await User.findById(userId);
+
+    const userof=(user.type=="recruiter")?
+         await Recruiter.findOne(user._id):
+        await JobApplicant.findOne(user._id)
+
+
+        if(!user){
+            throw new ApiError(403,"failed in getting user from id ")
+        }
+
+
+        return res.status(200).json(
+
+            new ApiResponse(200,userof," the data fetched success fully")
+        )
+
+    }
+
+   
+)
 
 
 
 
 // updateUserProfile - Handles PUT /user (updates user profile)
 
+const updateUserProfile=asyncHandler(async(req,res)=>{
+    const model=(req.user.type=="recruiter")?Recruiter:JobApplicant
+    const newUser=model.findByIdAndUpdate(req.user._id,
+        req.body,
+        {new:true}
+    );
+
+    if(!newUser){
+        throw new ApiError(402,"failed while updating the user")
+    }
+
+    return res.status(200).json(new ApiResponse(200,newUser,"the data updated successfully"))
+})
 
 
 
@@ -227,7 +289,14 @@ const logoutUser=asyncHandler(async(req,res)=>{
 
 
 
-
+export {
+    register,
+    login,
+    logoutUser,
+    getUserProfile,
+    getUserById,
+    updateUserProfile
+}
 
 
 

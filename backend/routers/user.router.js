@@ -37,3 +37,43 @@
 // many have additional authorization checks based on user type (recruiter/applicant).
 //  The routes support various query parameters for filtering, sorting, and pagination
 //   (though pagination is currently commented out).
+
+
+import express from "express"
+import {verifyJWT } from "../middleware/auth.middleware.js"
+
+import { 
+    register,
+    login,
+    logoutUser,
+    getUserProfile,
+    getUserById,
+    updateUserProfile
+} from "../controllers/User.controller.js"
+
+import { upload } from "../middleware/multer.middleware.js";
+
+const router=express.Router();
+
+router.post("/register",upload.fields([
+    {
+        name: "avatar",
+        maxCount: 1
+    }, 
+    {
+        name: "coverImage",
+        maxCount: 1
+    }
+]),register)
+
+router.post("/login",login)
+router.post("/logout",verifyJWT,logoutUser)
+
+
+//----------------------------------------------------------------------------------------->
+router.get("/user", verifyJWT, getUserProfile); // Get current user's profile
+router.get("/user/:id", verifyJWT, getUserById); // Get user by ID (Both)
+router.put("/user", verifyJWT, updateUserProfile); // Update profile (Both)
+
+
+export default router;

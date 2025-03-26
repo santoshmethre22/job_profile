@@ -1,6 +1,7 @@
-const mongoose = require("mongoose");
 
-let schema = new mongoose.Schema(
+import mongoose from "mongoose"
+
+const RatingSchema = new mongoose.Schema(
   {
     category: {
       type: String,
@@ -9,10 +10,12 @@ let schema = new mongoose.Schema(
     },
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
+      // add refrance
       required: true,
     },
     senderId: {
       type: mongoose.Schema.Types.ObjectId,
+      // add refrance 
       required: true,
     },
     rating: {
@@ -27,9 +30,13 @@ let schema = new mongoose.Schema(
       },
     },
   },
-  { collation: { locale: "en" } }
+  { 
+    timestamps:true,
+    collation: { locale: "en" } 
+  }
 );
 
-schema.index({ category: 1, receiverId: 1, senderId: 1 }, { unique: true });
+RatingSchema.index({ category: 1, receiverId: 1, senderId: 1 }, { unique: true });
 
-module.exports = mongoose.model("ratings", schema);
+
+export const Rating = mongoose.model("Rating", RatingSchema);

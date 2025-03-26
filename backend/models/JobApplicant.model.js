@@ -1,6 +1,9 @@
-const mongoose = require("mongoose");
 
-let schema = new mongoose.Schema(
+
+import mongoose  from "mongoose";
+
+
+const JobApplicantInfo = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -60,4 +63,4 @@ let schema = new mongoose.Schema(
   { collation: { locale: "en" } }
 );
 
-module.exports = mongoose.model("JobApplicantInfo", schema);
+export const  JobApplicant = mongoose.model("JobApplicantInfo", schema);

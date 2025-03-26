@@ -7,31 +7,23 @@ const recruiterSchema=mongoose.Schema({
         ref:"User"
 
     },
-
     name:{
         type:String,
         require:true,
 
     }
     ,
-
     company:{
 
         type:String,
         require:true
 
-
     },
-
     bio:{
 
         type:String,
 
     }
-
-
-
-
 },
 {
 
