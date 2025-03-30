@@ -5,10 +5,9 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 // Add new job (Recruiter only)
 const addJob = asyncHandler(async (req, res) => {
-    if (req.user.type !== "recruiter") {
-        throw new ApiError(403, "Only recruiters can add jobs");
-    }
-
+    // if (req.user.type !== "recruiter") {
+    //     throw new ApiError(403, "Only recruiters can add jobs");
+    // }
     const { 
         title, 
         description, 
@@ -22,7 +21,6 @@ const addJob = asyncHandler(async (req, res) => {
         jobType,
         duration
     } = req.body;
-    
     // Validate required fields
     const requiredFields = ['title', 'description', 'location', 'salary', 'deadline', 'jobType'];
     const missingFields = requiredFields.filter(field => !req.body[field]);
@@ -30,7 +28,6 @@ const addJob = asyncHandler(async (req, res) => {
     if (missingFields.length > 0) {
         throw new ApiError(400, `Missing required fields: ${missingFields.join(', ')}`);
     }
-
     // Create job with all fields
     const job = await Job.create({
         userId: req.user._id,
@@ -46,12 +43,16 @@ const addJob = asyncHandler(async (req, res) => {
         jobType,
         duration: duration || 0
     });
-
     return res.status(201).json(
         new ApiResponse(201, job, "Job created successfully")
     );
 });
 
+
+
+
+
+//-------------------------------------------------------------------------------------->
 // Get all jobs with filters and pagination
 const getAllJobs = asyncHandler(async (req, res) => {
     const { 
@@ -100,6 +101,33 @@ const getJobById = asyncHandler(async (req, res) => {
         new ApiResponse(200, job, "Job retrieved successfully")
     );
 });
+
+
+const addedjobs=asyncHandler(async()=>{
+    
+    if(req.user.type!=="recruiter"){
+        throw new ApiError(400,"you are not recruiter")
+    }
+    const {id}=req.user?._id;
+    if(id)
+    {
+        throw new ApiError(404,"please login ");
+    }
+      
+    const options = {
+        page: 1,
+        limit: 10,
+        sort: { createdAt: -1 }
+    };
+
+    const jobs=await Job.paginate(id,options)
+
+    return res.status(200)
+    .json(
+        new ApiResponse(200,jobs," ")
+    )
+
+})
 
 // Update job (Recruiter only)
 const updateJob = asyncHandler(async (req, res) => {
@@ -160,5 +188,6 @@ export {
     getAllJobs, 
     getJobById, 
     updateJob, 
-    deleteJob 
+    deleteJob ,
+    addedjobs
 };

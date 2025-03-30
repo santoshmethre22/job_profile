@@ -9,7 +9,7 @@ const jobSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      
     },
     title: {
       type: String,
@@ -75,12 +75,12 @@ const jobSchema = new mongoose.Schema(
     deadline: {
       type: Date,
       required: [true, "Application deadline is required"],
-      validate: {
-        validator: function(value) {
-          return value > this.dateOfPosting;
-        },
-        message: "Deadline must be after the posting date"
-      }
+      // validate: {
+      //   validator: function(value) {
+      //     return value > this.dateOfPosting;
+      //   },
+      //   message: "Deadline must be after the posting date"
+      // }
     },
     skillsets: {
       type: [String],

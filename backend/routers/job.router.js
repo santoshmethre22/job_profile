@@ -16,7 +16,8 @@ import {
     getAllJobs, 
     getJobById, 
     updateJob, 
-    deleteJob 
+    deleteJob ,
+    addedjobs
 }
 from "../controllers/Job.controller.js"
 
@@ -36,5 +37,8 @@ router.get("/get-jojb/:id", verifyJWT, getJobById); // Get a single job
 router.put("/update/:id", verifyJWT, updateJob); // Update job (Recruiter)
 
 router.delete("/delete/:id", verifyJWT, deleteJob); // Delete job (Recruiter)
+
+
+router.get("/added-jobs",verifyJWT,addedjobs)// added job of the user 
 
 export default router;

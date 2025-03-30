@@ -28,9 +28,6 @@ app.use("/api/v1/user",userRouter)
 app.use("/api/v1/job",jobRouter)
 
 
-app.get("/",(req,res)=>{
-    res.send("hello santosh")
-})
 
 
 

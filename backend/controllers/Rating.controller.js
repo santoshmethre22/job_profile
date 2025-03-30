@@ -3,15 +3,12 @@
 import { asyncHandler } from "../utils/asyncHandler";
 
 import { Recruiter } from "../models/Recuiter.model.js";
+
 import { JobApplicant } from "../models/JobApplicant.model.js";
 
 import { Rating } from "../models/Rating.model.js";
 
-import {
-  ApiResponse
-}
-
-from "../utils/Apiresponse.js"
+import { ApiResponse} from "../utils/Apiresponse.js"
 
 import {ApiError} from "../utils/ApiError.js"
 

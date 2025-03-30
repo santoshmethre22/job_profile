@@ -1,72 +1,35 @@
-import { useState } from 'react'
+import './App.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Register from './pages/auth/Register.jsx';
+import Login from './pages/auth/Login.jsx';
+import { AuthProvider } from "./context/User.context.jsx";
+import Header from "./components/Header/Header.jsx";
+import Footer from "./components/Footer/Footer.jsx";
+import Home from './components/Home/Home.jsx';
+import AddJob from './pages/job/AddJob/AddJob.jsx';
+import { JobProvider } from './context/Job.context.jsx';
+import Dashboard from './pages/Dashboard.jsx';
 
-import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>  
-         {/* job-portal/
-        ├── public/
-        │   ├── index.html
-        │   ├── favicon.ico
-        │   └── assets/ (images, etc.)
-        │
-        ├── src/
-        │   ├── context/               # State management
-        │   │   └── JobContext.js
-        │   │
-        │   ├── components/            # Reusable UI components
-        │   │   ├── common/
-        │   │   │   ├── Button.js
-        │   │   │   ├── Card.js
-        │   │   │   ├── FormInput.js
-        │   │   │   └── ...
-        │   │   ├── jobs/
-        │   │   │   ├── JobCard.js
-        │   │   │   └── JobFilter.js
-        │   │   ├── Navbar.js
-        │   │   ├── Footer.js
-        │   │   └── MessagePopup.js
-        │   │
-        │   ├── pages/                 # Page components
-        │   │   ├── auth/
-        │   │   │   ├── Login.js
-        │   │   │   └── Signup.js
-        │   │   ├── jobs/
-        │   │   │   ├── Home.js
-        │   │   │   ├── JobDetails.js
-        │   │   │   └── Applications.js
-        │   │   ├── Dashboard.js
-        │   │   └── ErrorPage.js
-        │   │
-        │   ├── styles/                # CSS modules
-        │   │   ├── base/
-        │   │   │   ├── _variables.css
-        │   │   │   └── _reset.css
-        │   │   ├── components/
-        │   │   │   ├── Navbar.css
-        │   │   │   └── JobCard.css
-        │   │   ├── pages/
-        │   │   │   ├── Home.css
-        │   │   │   └── Dashboard.css
-        │   │   └── App.css
-        │   │
-        │   ├── utils/                 # Helper functions
-        │   │   ├── api.js
-        │   │   └── auth.js
-        │   │
-        │   ├── App.js
-        │   └── index.js
-        │
-        ├── package.json
-        └── README.md */}
-
-
-        
-    </>
-  )
+    <BrowserRouter>
+      <AuthProvider>
+          <Header />
+        <JobProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/add-job" element={<AddJob />} />
+            <Route path='/dashboard' element={<Dashboard />} />
+            
+          </Routes>
+        </JobProvider>
+      </AuthProvider>
+          <Footer />
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

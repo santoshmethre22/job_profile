@@ -1,0 +1,72 @@
+/* AddJob.css */
+.add-job-container {
+    padding: 20px;
+    background-color: #f3f4f6;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .add-job-card {
+    background-color: white;
+    padding: 24px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .add-job-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  
+  .add-job-form {
+    display: grid;
+    gap: 12px;
+  }
+  
+  .add-job-field {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .add-job-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+  }
+  
+  .add-job-input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s ease-in-out;
+  }
+  
+  .add-job-input:focus {
+    border-color: #2563eb;
+  }
+  
+  .add-job-button {
+    margin-top: 16px;
+    padding: 10px;
+    background-color: #2563eb;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .add-job-button:hover {
+    background-color: #1d4ed8;
+  }
+  
