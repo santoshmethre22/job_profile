@@ -166,11 +166,34 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 // Refresh Access Token (Placeholder)
-const refreshAccessToken = asyncHandler(async (req, res) => {
-  // Implementation pending
-});
+// const refreshAccessToken = asyncHandler(async (req, res) => {
+//   // Implementation pending
+// });
 
 // Get Current User Profile
+
+const currentUser = asyncHandler(async (req, res) => {
+
+  
+  const id = req.user._id;  // ✅ Correct way to get user ID
+
+  if (!id) {
+      throw new ApiError(404, "User not found, please login");
+  }
+
+  const user = await User.findById(id);
+
+  if (!user) {
+      throw new ApiError(404, "User not found, please login");
+  }
+
+  return res.status(200).json(new ApiResponse(200, user, "User fetched successfully")); // ✅ Correct status code
+});
+
+
+
+
+
 const getUserProfile = asyncHandler(async (req, res) => {
   try {
     const user =
@@ -226,5 +249,6 @@ export {
   getUserProfile,
   getUserById,
   updateUserProfile,
-  refreshAccessToken,
+ 
+  currentUser
 };

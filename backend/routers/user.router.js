@@ -7,6 +7,7 @@ import {
   getUserProfile,
   getUserById,
   updateUserProfile,
+  currentUser
 } from "../controllers/User.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 
@@ -45,4 +46,7 @@ router.get("/:id", verifyJWT, getUserById);
 // Update user profile (Both Recruiter & Applicant)
 router.put("/update-user", verifyJWT, updateUserProfile);
 
+
+// -------------------------------------------------->
+router.get("/present/user",verifyJWT,currentUser)
 export default router;

@@ -29,7 +29,7 @@ const router=express.Router();
 router.post("/add-job", verifyJWT, addJob); // Add a new job (Recruiter)
 
 
-router.get("/get-all-job", verifyJWT, getAllJobs); // Get all jobs (filtered)
+router.get("/get-all-job", getAllJobs); // Get all jobs (filtered)
 
 
 router.get("/get-jojb/:id", verifyJWT, getJobById); // Get a single job

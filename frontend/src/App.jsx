@@ -9,6 +9,8 @@ import Home from './components/Home/Home.jsx';
 import AddJob from './pages/job/AddJob/AddJob.jsx';
 import { JobProvider } from './context/Job.context.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import Profile from './pages/profile/Profile.jsx';
+import GetJob from './pages/job/GetJob/GetJob.jsx';
 
 
 function App() {
@@ -23,7 +25,10 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/add-job" element={<AddJob />} />
             <Route path='/dashboard' element={<Dashboard />} />
-            
+
+            <Route path='/profile' element={<Profile />} />
+
+            <Route path='/jobs/get-all-jobs' element={<GetJob />} />
           </Routes>
         </JobProvider>
       </AuthProvider>

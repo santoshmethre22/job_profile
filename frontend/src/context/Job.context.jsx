@@ -22,10 +22,7 @@ export const JobProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await api.post("/api/v1/job/add-job", jobData);
-
-      setJob(response.data);
-
-
+     setJob(response.data);
       setLoading(false);
       setadded(response.data)
       navigate("/dashboard"); // Corrected navigation
@@ -49,6 +46,28 @@ export const JobProvider = ({ children }) => {
     }
   };
   
+
+
+  const getAllJobs=async (filter)=>{
+  try {
+    
+      const response=  await api.get("/api/job/get-all-job",{
+          params:filter
+        })
+
+        console.log(response)
+        return response;
+  } catch (error) {
+    
+  } 
+
+    }
+
+
+    
+
+
+
   return (
     <JobContext.Provider value={{
        job, 
@@ -56,7 +75,8 @@ export const JobProvider = ({ children }) => {
        addJob, 
        loading ,
        added,
-       addedjobs
+       addedjobs,
+       getAllJobs
 
        }}>
       {children}
